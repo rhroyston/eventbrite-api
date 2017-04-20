@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<title>Eventbrite API Basic Integration Snippet</title>
+	<meta name="description" content="Eventbrite API Basic Integration Snippet">
+	
+	<!-- Favicons -->
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="/favicons/manifest.json">
+	<link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5">
+	<link rel="shortcut icon" href="/favicons/favicon.ico">
+	<meta name="msapplication-config" content="/favicons/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+	
+	<!-- CSS Styling -->
+	<style>
+		body{
+			margin:48px;
+		}
+		#events{
+			margin-top:48px;
+		}
+		#load-button{
+			margin-top:48px;
+		}
+	</style>
+</head>
+
+<body>
+    <main>
+    	<h2>Eventbrite API - Basic Browser Integration with Javascript</h2>
+    	<h3>Click button to load events</h3>
+    	<div><a href="//rack.pub">Home</a></div>
+        <button id="load-button">Load Events</button>
+        <section id="events"></section>
+    </main>	
+	<script type='application/ld+json'>
+		{
+			"@context": "http://www.schema.org",
+			"@type": "product",
+			"brand": "Ron Royston",
+			"name": "Eventbrite API Basic Integration Snippet",
+			"image": "https://rack.pub/media/eventbrite-api.jpg",
+			"description": "Eventbrite API Basic Integration with Browser Javascript Snippet.",
+			"aggregateRating": {
+				"@type": "aggregateRating",
+				"ratingValue": "5",
+				"reviewCount": "1"
+			}
+		}
+	</script>
+
+	<script>
+		/*
+			(c) 2017, Ron Royston, MIT License
+			https://rack.pub
+        */
+		document.addEventListener('DOMContentLoaded', function() {
+			var doc = document;
+			var loadButton = doc.getElementById('load-button');
+			var events = doc.getElementById('events');
+
+			var EVENTS_TO_SHOW = 3;
+			
+			if (loadButton) {
+				loadButton.addEventListener("click", function() {
+					//get your organizers number from the organizers profile page and the token from the Create oAuth section
+					getJSON('//www.eventbriteapi.com/v3/organizers/11463898463/events/?token=KL7WFWZ43R4XRKOLBPRL&start_date.range_start=' + n + 'T01:00:00').then(function(data) {
+						var when;
+						if (data){
+							for (var i = 0; i < EVENTS_TO_SHOW; i++) {
+								
+								if(data.events[i]){
+									when = new Date(data.events[i].start.utc);
+									var p = doc.createElement('p');
+									var h = doc.createElement('h5');
+									var a = doc.createElement('a');
+									var icon = doc.createElement('i');
+									
+									var linkText = doc.createTextNode(" more... ");
+									
+									p.className = "white-text";
+									h.className = "white-text thin";
+									a.className = "white-text";
+									icon.className = "material-icons event-anchor";
+									
+									icon.appendChild(linkText);
+									a.appendChild(icon);
+									
+									a.title = "details / tickets";
+									a.href = data.events[i].url;
+														
+									h.innerHTML = data.events[i].name.text;
+									p.innerHTML = when.toDateString()  + ' at ' + when.toLocaleTimeString();
+									p.appendChild(a);
+									events.appendChild(h);
+									events.appendChild(p);
+								}
+							}
+						}
+					}, function(status) {
+						console.log('Something went wrong.');
+					});
+				});
+			}
+			
+			var d = new Date();
+			var n = d.toISOString().split('T')[0]
+			var getJSON = function(url) {
+				return new Promise(function(resolve, reject) {
+					var xhr = new XMLHttpRequest();
+					xhr.open('get', url, true);
+					//xhr.responseType = 'json';
+					xhr.onload = function() {
+						var status = xhr.status;
+						if (status == 200) {
+							//var serverResponse = JSON.parse(xml.responseText);
+							resolve(JSON.parse(xhr.response));
+						}
+						else {
+							reject(status);
+						}
+					};
+					xhr.send();
+				});
+			};
+			
+			function anchorMaker(link,text,id){
+				var PART1 = '<a class="rate-anchor" href="#" onclick="window.open(\'';
+				var newlink = document.createElement('a');
+				newlink.innerHTML = 'Google';
+				newlink.setAttribute('title', 'Google');
+				newlink.setAttribute('href', 'http://google.com');
+				document.body.appendChild(newlink);
+			}
+		}, false);
+	</script>
+</body>
+
+</html>
